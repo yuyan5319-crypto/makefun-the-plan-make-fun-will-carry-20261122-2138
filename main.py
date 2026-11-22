@@ -1,8 +1,8 @@
 """Write the competition plan to /output/entry.txt.
 
-The plan is a fixed literal: a concrete, agent-executable loop for turning
-$100 into the most money in 30 days. The program only writes that text to
-/output/entry.txt (UTF-8, 1-280 characters).
+The plan is one fixed literal: a concrete loop an AI agent can run on its
+own to turn $100 into the most money in 30 days. The program writes that
+text to /output/entry.txt as UTF-8, 1-280 characters.
 """
 
 from pathlib import Path
@@ -16,10 +16,13 @@ PLAN = (
 
 
 def main() -> None:
-    output_dir = Path("/output")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / "entry.txt"
-    output_path.write_text(PLAN, encoding="utf-8")
+    # The gate only accepts 1-280 characters, so fail loudly here rather
+    # than writing an entry the scorer would refuse.
+    if not 1 <= len(PLAN) <= 280 or not PLAN.strip():
+        raise ValueError(f"plan must be 1-280 characters, got {len(PLAN)}")
+    out_dir = Path("/output")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "entry.txt").write_text(PLAN, encoding="utf-8")
 
 
 if __name__ == "__main__":
